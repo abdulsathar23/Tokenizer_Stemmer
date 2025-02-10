@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Tokenizer and Stemmer</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Text Tokenizer and Stemmer</h1>
+
+        <!-- Static User Info -->
+        <div>
+            <p><strong>Name:</strong> Abdul sathar A</p>
+            <p><strong>Roll Number:</strong> 7376222AD105</p>
+            <p><strong>Date:</strong> <span id="currentDate"></span></p>
+        </div>
+
+        <!-- Text Input Form -->
+        <div>
+            <label for="inputText">Text:</label>
+            <textarea id="inputText" placeholder="Enter text here..."></textarea>
+        </div>
+
+        <button id="submitButton">Process Text</button>
+
+        <div id="resultContainer">
+            <h2>Results</h2>
+
+            <table id="resultTable">
+                <thead>
+                    <tr>
+                        <th>Tokenization</th>
+                        <th>Stemming</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Display the current date
+        document.getElementById('currentDate').textContent = new Date().toLocaleString();
+
+        document.getElementById('submitButton').addEventListener('click', function() {
+            const inputText = document.getElementById('inputText').value;
+            
+            if (inputText.trim() === "") {
+                alert("Please enter some text.");
+                return;
+            }
+
+            fetch('/process_text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'text=' + encodeURIComponent(inputText),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Clearing the previous table content
+                const resultTable = document.getElementById('resultTable').getElementsByTagName('tbody')[0];
+                resultTable.innerHTML = ''; 
+
+                // Adding the tokenization and stemming results
+                data.Results.forEach(item => {
+                    const row = resultTable.insertRow();
+                    const cell1 = row.insertCell(0);
+                    const cell2 = row.insertCell(1);
+                    cell1.textContent = item.Tokenization;
+                    cell2.textContent = item.Stemming;
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
